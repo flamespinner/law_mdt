@@ -5,7 +5,7 @@ local prop = nil
 
 local JournalOuvert = false
 
-TriggerServerEvent("mdt:getOffensesAndOfficer")
+TriggerServerEvent("law_mdt:getOffensesAndOfficer")
 
 function SortirJournal()
     local ped = PlayerPedId()
@@ -29,8 +29,8 @@ function AnimationJ(ped, dict, name)
     RemoveAnimDict(dict)
 end
 
-RegisterNetEvent("mdt:toggleVisibilty")
-AddEventHandler("mdt:toggleVisibilty", function(reports, warrants, officer, job, grade)
+RegisterNetEvent("law_mdt:toggleVisibilty")
+AddEventHandler("law_mdt:toggleVisibilty", function(reports, warrants, officer, job, grade)
     local playerPed = PlayerPedId()
     if not isVisible then
         SetCurrentPedWeapon(playerPed, GetHashKey('WEAPON_UNARMED'), true) -- unarm player
@@ -93,95 +93,95 @@ RegisterNUICallback("close", function(data, cb)
 end)
 
 RegisterNUICallback("performOffenderSearch", function(data, cb)
-    TriggerServerEvent("mdt:performOffenderSearch", data.query)
-    TriggerServerEvent("mdt:getOffensesAndOfficer")
+    TriggerServerEvent("law_mdt:performOffenderSearch", data.query)
+    TriggerServerEvent("law_mdt:getOffensesAndOfficer")
     cb('ok')
 end)
 
 RegisterNUICallback("viewOffender", function(data, cb)
-    TriggerServerEvent("mdt:getOffenderDetails", data.offender)
+    TriggerServerEvent("law_mdt:getOffenderDetails", data.offender)
     cb('ok')
 end)
 
 RegisterNUICallback("saveOffenderChanges", function(data, cb)
-    TriggerServerEvent("mdt:saveOffenderChanges", data.id, data.changes, data.identifier)
+    TriggerServerEvent("law_mdt:saveOffenderChanges", data.id, data.changes, data.identifier)
     cb('ok')
 end)
 
 RegisterNUICallback("submitNewReport", function(data, cb)
-    TriggerServerEvent("mdt:submitNewReport", data)
+    TriggerServerEvent("law_mdt:submitNewReport", data)
     cb('ok')
 end)
 
 RegisterNUICallback("performReportSearch", function(data, cb)
-    TriggerServerEvent("mdt:performReportSearch", data.query)
+    TriggerServerEvent("law_mdt:performReportSearch", data.query)
     cb('ok')
 end)
 
 RegisterNUICallback("getOffender", function(data, cb)
-    TriggerServerEvent("mdt:getOffenderDetailsById", data.char_id)
+    TriggerServerEvent("law_mdt:getOffenderDetailsById", data.char_id)
     cb('ok')
 end)
 
 RegisterNUICallback("deleteReport", function(data, cb)
-    TriggerServerEvent("mdt:deleteReport", data.id)
+    TriggerServerEvent("law_mdt:deleteReport", data.id)
     cb('ok')
 end)
 
 RegisterNUICallback("saveReportChanges", function(data, cb)
-    TriggerServerEvent("mdt:saveReportChanges", data)
+    TriggerServerEvent("law_mdt:saveReportChanges", data)
     cb('ok')
 end)
 
 RegisterNUICallback("getWarrants", function(data, cb)
-    TriggerServerEvent("mdt:getWarrants")
+    TriggerServerEvent("law_mdt:getWarrants")
 end)
 
 RegisterNUICallback("submitNewWarrant", function(data, cb)
-    TriggerServerEvent("mdt:submitNewWarrant", data)
+    TriggerServerEvent("law_mdt:submitNewWarrant", data)
     cb('ok')
 end)
 
 RegisterNUICallback("deleteWarrant", function(data, cb)
-    TriggerServerEvent("mdt:deleteWarrant", data.id)
+    TriggerServerEvent("law_mdt:deleteWarrant", data.id)
     cb('ok')
 end)
 
 RegisterNUICallback("deleteWarrant", function(data, cb)
-    TriggerServerEvent("mdt:deleteWarrant", data.id)
+    TriggerServerEvent("law_mdt:deleteWarrant", data.id)
     cb('ok')
 end)
 
 RegisterNUICallback("getReport", function(data, cb)
-    TriggerServerEvent("mdt:getReportDetailsById", data.id)
+    TriggerServerEvent("law_mdt:getReportDetailsById", data.id)
     cb('ok')
 end)
 
-RegisterNetEvent("mdt:returnOffenderSearchResults")
-AddEventHandler("mdt:returnOffenderSearchResults", function(results)
+RegisterNetEvent("law_mdt:returnOffenderSearchResults")
+AddEventHandler("law_mdt:returnOffenderSearchResults", function(results)
     SendNUIMessage({
         type = "returnedPersonMatches",
         matches = results
     })
 end)
 
-RegisterNetEvent("mdt:closeModal")
-AddEventHandler("mdt:closeModal", function()
+RegisterNetEvent("law_mdt:closeModal")
+AddEventHandler("law_mdt:closeModal", function()
     SendNUIMessage({
         type = "closeModal"
     })
 end)
 
-RegisterNetEvent("mdt:returnOffenderDetails")
-AddEventHandler("mdt:returnOffenderDetails", function(data)
+RegisterNetEvent("law_mdt:returnOffenderDetails")
+AddEventHandler("law_mdt:returnOffenderDetails", function(data)
     SendNUIMessage({
         type = "returnedOffenderDetails",
         details = data
     })
 end)
 
-RegisterNetEvent("mdt:returnOffensesAndOfficer")
-AddEventHandler("mdt:returnOffensesAndOfficer", function(data, name)
+RegisterNetEvent("law_mdt:returnOffensesAndOfficer")
+AddEventHandler("law_mdt:returnOffensesAndOfficer", function(data, name)
     SendNUIMessage({
         type = "offensesAndOfficerLoaded",
         offenses = data,
@@ -189,44 +189,44 @@ AddEventHandler("mdt:returnOffensesAndOfficer", function(data, name)
     })
 end)
 
-RegisterNetEvent("mdt:returnReportSearchResults")
-AddEventHandler("mdt:returnReportSearchResults", function(results)
+RegisterNetEvent("law_mdt:returnReportSearchResults")
+AddEventHandler("law_mdt:returnReportSearchResults", function(results)
     SendNUIMessage({
         type = "returnedReportMatches",
         matches = results
     })
 end)
 
-RegisterNetEvent("mdt:returnWarrants")
-AddEventHandler("mdt:returnWarrants", function(data)
+RegisterNetEvent("law_mdt:returnWarrants")
+AddEventHandler("law_mdt:returnWarrants", function(data)
     SendNUIMessage({
         type = "returnedWarrants",
         warrants = data
     })
 end)
 
-RegisterNetEvent("mdt:completedWarrantAction")
-AddEventHandler("mdt:completedWarrantAction", function(data)
+RegisterNetEvent("law_mdt:completedWarrantAction")
+AddEventHandler("law_mdt:completedWarrantAction", function(data)
     SendNUIMessage({
         type = "completedWarrantAction"
     })
 end)
 
-RegisterNetEvent("mdt:returnReportDetails")
-AddEventHandler("mdt:returnReportDetails", function(data)
+RegisterNetEvent("law_mdt:returnReportDetails")
+AddEventHandler("law_mdt:returnReportDetails", function(data)
     SendNUIMessage({
         type = "returnedReportDetails",
         details = data
     })
 end)
 
-RegisterNetEvent("mdt:sendNUIMessage")
-AddEventHandler("mdt:sendNUIMessage", function(messageTable)
+RegisterNetEvent("law_mdt:sendNUIMessage")
+AddEventHandler("law_mdt:sendNUIMessage", function(messageTable)
     SendNUIMessage(messageTable)
 end)
 
-RegisterNetEvent("mdt:sendNotification")
-AddEventHandler("mdt:sendNotification", function(message)
+RegisterNetEvent("law_mdt:sendNotification")
+AddEventHandler("law_mdt:sendNotification", function(message)
     SendNUIMessage({
         type = "sendNotification",
         message = message

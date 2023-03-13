@@ -22,14 +22,14 @@ RegisterCommand("mdt", function(source, args)
     				warrants[w].charges = json.decode(warrants[w].charges)
     			end
 
-    			TriggerClientEvent('mdt:toggleVisibilty', _source, reports, warrants, officername, job, jobgrade)
+    			TriggerClientEvent('law_mdt:toggleVisibilty', _source, reports, warrants, officername, job, jobgrade)
     		end)
     	end)
 	end
 end)
 
-RegisterServerEvent("mdt:getOffensesAndOfficer")
-AddEventHandler("mdt:getOffensesAndOfficer", function()
+RegisterServerEvent("law_mdt:getOffensesAndOfficer")
+AddEventHandler("law_mdt:getOffensesAndOfficer", function()
 	local usource = source
 	local Character = VorpCore.getUser(usource).getUsedCharacter
 	local officername = (Character.firstname.. " " ..Character.lastname)
@@ -42,12 +42,12 @@ AddEventHandler("mdt:getOffensesAndOfficer", function()
 			end
 		end
 
-		TriggerClientEvent("mdt:returnOffensesAndOfficer", usource, charges, officername)
+		TriggerClientEvent("law_mdt:returnOffensesAndOfficer", usource, charges, officername)
 	end)
 end)
 
-RegisterServerEvent("mdt:performOffenderSearch")
-AddEventHandler("mdt:performOffenderSearch", function(query)
+RegisterServerEvent("law_mdt:performOffenderSearch")
+AddEventHandler("law_mdt:performOffenderSearch", function(query)
 	local usource = source
 	local matches = {}
 
@@ -59,12 +59,12 @@ AddEventHandler("mdt:performOffenderSearch", function(query)
 			table.insert(matches, data)
 		end
 
-		TriggerClientEvent("mdt:returnOffenderSearchResults", usource, matches)
+		TriggerClientEvent("law_mdt:returnOffenderSearchResults", usource, matches)
 	end)
 end)
 
-RegisterServerEvent("mdt:getOffenderDetails")
-AddEventHandler("mdt:getOffenderDetails", function(offender)
+RegisterServerEvent("law_mdt:getOffenderDetails")
+AddEventHandler("law_mdt:getOffenderDetails", function(offender)
 	local usource = source
 
 	--print(offender.charidentifier)
@@ -97,14 +97,14 @@ AddEventHandler("mdt:getOffenderDetails", function(offender)
                     offender.haswarrant = true
                 end
 			
-				TriggerClientEvent("mdt:returnOffenderDetails", usource, offender)
+				TriggerClientEvent("law_mdt:returnOffenderDetails", usource, offender)
             end)
         end)
     end)
 end)
 
-RegisterServerEvent("mdt:getOffenderDetailsById")
-AddEventHandler("mdt:getOffenderDetailsById", function(char_id)
+RegisterServerEvent("law_mdt:getOffenderDetailsById")
+AddEventHandler("law_mdt:getOffenderDetailsById", function(char_id)
     local usource = source
 	print(char_id)
 
@@ -113,8 +113,8 @@ AddEventHandler("mdt:getOffenderDetailsById", function(char_id)
         local offender = result[1]
 
         if not offender then
-            TriggerClientEvent("mdt:closeModal", usource)
-            TriggerClientEvent("mdt:sendNotification", usource, "This person no longer exists.")
+            TriggerClientEvent("law_mdt:closeModal", usource)
+            TriggerClientEvent("law_mdt:sendNotification", usource, "This person no longer exists.")
             return
         end
     
@@ -146,15 +146,15 @@ AddEventHandler("mdt:getOffenderDetailsById", function(char_id)
                         offender.haswarrant = true
                     end
 
-					TriggerClientEvent("mdt:returnOffenderDetails", usource, offender)
+					TriggerClientEvent("law_mdt:returnOffenderDetails", usource, offender)
                 end)
             end)
         end)
     end)
 end)
 
-RegisterServerEvent("mdt:saveOffenderChanges")
-AddEventHandler("mdt:saveOffenderChanges", function(charidentifier, changes, identifier)
+RegisterServerEvent("law_mdt:saveOffenderChanges")
+AddEventHandler("law_mdt:saveOffenderChanges", function(charidentifier, changes, identifier)
 	local usource = source
 
 	exports.ghmattimysql:execute('SELECT * FROM `user_mdt` WHERE `char_id` = ?', {charidentifier}, function(result)
@@ -174,24 +174,24 @@ AddEventHandler("mdt:saveOffenderChanges", function(charidentifier, changes, ide
 			exports.oxmysql:execute('DELETE FROM `user_convictions` WHERE `char_id` = ? AND `offense` = ?', {charidentifier, changes.convictions_removed[i]})
 		end
 
-		TriggerClientEvent("mdt:sendNotification", usource, "Offender changes have been saved.")
+		TriggerClientEvent("law_mdt:sendNotification", usource, "Offender changes have been saved.")
 	end)
 end)
 
-RegisterServerEvent("mdt:saveReportChanges")
-AddEventHandler("mdt:saveReportChanges", function(data)
+RegisterServerEvent("law_mdt:saveReportChanges")
+AddEventHandler("law_mdt:saveReportChanges", function(data)
 	exports.oxmysql:execute('UPDATE `mdt_reports` SET `title` = ?, `incident` = ? WHERE `id` = ?', {data.id, data.title, data.incident})
-	TriggerClientEvent("mdt:sendNotification", source, "Report changes have been saved.")
+	TriggerClientEvent("law_mdt:sendNotification", source, "Report changes have been saved.")
 end)
 
-RegisterServerEvent("mdt:deleteReport")
-AddEventHandler("mdt:deleteReport", function(id)
+RegisterServerEvent("law_mdt:deleteReport")
+AddEventHandler("law_mdt:deleteReport", function(id)
 	exports.oxmysql:execute('DELETE FROM `mdt_reports` WHERE `id` = ?', {id})
-	TriggerClientEvent("mdt:sendNotification", source, "Report has been successfully deleted.")
+	TriggerClientEvent("law_mdt:sendNotification", source, "Report has been successfully deleted.")
 end)
 
-RegisterServerEvent("mdt:submitNewReport")
-AddEventHandler("mdt:submitNewReport", function(data)
+RegisterServerEvent("law_mdt:submitNewReport")
+AddEventHandler("law_mdt:submitNewReport", function(data)
 	local usource = source
 	local Character = VorpCore.getUser(usource).getUsedCharacter
 	local officername = (Character.firstname.. " " ..Character.lastname)
@@ -199,8 +199,8 @@ AddEventHandler("mdt:submitNewReport", function(data)
 	charges = json.encode(data.charges)
 	data.date = os.date('%m-%d-%Y %H:%M:%S', os.time())
 	exports.oxmysql:insert('INSERT INTO `mdt_reports` (`char_id`, `title`, `incident`, `charges`, `author`, `name`, `date`) VALUES (?, ?, ?, ?, ?, ?, ?)', {data.char_id, data.title, data.incident, charges, officername, data.name, data.date,}, function(id)
-		TriggerEvent("mdt:getReportDetailsById", id, usource)
-		TriggerClientEvent("mdt:sendNotification", usource, "A new report has been submitted.")
+		TriggerEvent("law_mdt:getReportDetailsById", id, usource)
+		TriggerClientEvent("law_mdt:sendNotification", usource, "A new report has been submitted.")
 	end)
 
 	for offense, count in pairs(data.charges) do
@@ -214,8 +214,8 @@ AddEventHandler("mdt:submitNewReport", function(data)
 	end
 end)
 
-RegisterServerEvent("mdt:performReportSearch")
-AddEventHandler("mdt:performReportSearch", function(query)
+RegisterServerEvent("law_mdt:performReportSearch")
+AddEventHandler("law_mdt:performReportSearch", function(query)
 	local usource = source
 	local matches = {}
 	exports.ghmattimysql:execute("SELECT * FROM `mdt_reports` WHERE `id` LIKE @query OR LOWER(`title`) LIKE @query OR LOWER(`name`) LIKE @query OR LOWER(`author`) LIKE @query or LOWER(`charges`) LIKE @query", {
@@ -227,24 +227,24 @@ AddEventHandler("mdt:performReportSearch", function(query)
 			table.insert(matches, data)
 		end
 
-		TriggerClientEvent("mdt:returnReportSearchResults", usource, matches)
+		TriggerClientEvent("law_mdt:returnReportSearchResults", usource, matches)
 	end)
 end)
 
-RegisterServerEvent("mdt:getWarrants")
-AddEventHandler("mdt:getWarrants", function()
+RegisterServerEvent("law_mdt:getWarrants")
+AddEventHandler("law_mdt:getWarrants", function()
 	local usource = source
 	exports.ghmattimysql:execute("SELECT * FROM `mdt_warrants`", {}, function(warrants)
 		for i = 1, #warrants do
 			warrants[i].expire_time = ""
 			warrants[i].charges = json.decode(warrants[i].charges)
 		end
-		TriggerClientEvent("mdt:returnWarrants", usource, warrants)
+		TriggerClientEvent("law_mdt:returnWarrants", usource, warrants)
 	end)
 end)
 
-RegisterServerEvent("mdt:submitNewWarrant")
-AddEventHandler("mdt:submitNewWarrant", function(data)
+RegisterServerEvent("law_mdt:submitNewWarrant")
+AddEventHandler("law_mdt:submitNewWarrant", function(data)
 	local usource = source
 	local Character = VorpCore.getUser(usource).getUsedCharacter
 	local officername = (Character.firstname.. " " ..Character.lastname)
@@ -253,31 +253,31 @@ AddEventHandler("mdt:submitNewWarrant", function(data)
 	data.author = officername
 	data.date = os.date('%m-%d-%Y %H:%M:%S', os.time())
 	exports.oxmysql:insert('INSERT INTO `mdt_warrants` (`name`, `char_id`, `report_id`, `report_title`, `charges`, `date`, `expire`, `notes`, `author`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', {data.name, data.char_id, data.report_id, data.report_title, data.charges, data.date, data.expire, data.notes, data.author}, function()
-		TriggerClientEvent("mdt:completedWarrantAction", usource)
-		TriggerClientEvent("mdt:sendNotification", usource, "A new warrant has been created.")
+		TriggerClientEvent("law_mdt:completedWarrantAction", usource)
+		TriggerClientEvent("law_mdt:sendNotification", usource, "A new warrant has been created.")
 	end)
 end)
 
-RegisterServerEvent("mdt:deleteWarrant")
-AddEventHandler("mdt:deleteWarrant", function(id)
+RegisterServerEvent("law_mdt:deleteWarrant")
+AddEventHandler("law_mdt:deleteWarrant", function(id)
 	local usource = source
 	exports.oxmysql:execute('DELETE FROM `mdt_warrants` WHERE `id` = ?', {id}, function()
-		TriggerClientEvent("mdt:completedWarrantAction", usource)
+		TriggerClientEvent("law_mdt:completedWarrantAction", usource)
 	end)
-	TriggerClientEvent("mdt:sendNotification", usource, "Warrant has been successfully deleted.")
+	TriggerClientEvent("law_mdt:sendNotification", usource, "Warrant has been successfully deleted.")
 end)
 
-RegisterServerEvent("mdt:getReportDetailsById")
-AddEventHandler("mdt:getReportDetailsById", function(query, _source)
+RegisterServerEvent("law_mdt:getReportDetailsById")
+AddEventHandler("law_mdt:getReportDetailsById", function(query, _source)
 	if _source then source = _source end
 	local usource = source
 	exports.ghmattimysql:execute("SELECT * FROM `mdt_reports` WHERE `id` = ?", {query}, function(result)
 		if result and result[1] then
 			result[1].charges = json.decode(result[1].charges)
-			TriggerClientEvent("mdt:returnReportDetails", usource, result[1])
+			TriggerClientEvent("law_mdt:returnReportDetails", usource, result[1])
 		else
-			TriggerClientEvent("mdt:closeModal", usource)
-			TriggerClientEvent("mdt:sendNotification", usource, "This report cannot be found.")
+			TriggerClientEvent("law_mdt:closeModal", usource)
+			TriggerClientEvent("law_mdt:sendNotification", usource, "This report cannot be found.")
 		end
 	end)
 end)
